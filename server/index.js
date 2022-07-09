@@ -5,6 +5,8 @@ import helmet from "helmet";
 import path from "path";
 import services from "./services/index.js";
 import { fileURLToPath } from "url";
+import sequelize from "./database/index.js";
+import Post from "./models/post.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,4 +52,14 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello World" });
 });
 
-app.listen(8000, () => console.log("Listening on port 8000!"));
+const initialize = async () => {
+  try {
+    await sequelize.sync({ force: true });
+    console.log("Connection to database has been established successfully");
+    app.listen(8000, () => console.log("Listening on port 8000"));
+  } catch (err) {
+    console.error(`Error: ${err.message}`);
+  }
+};
+
+initialize();
